@@ -124,7 +124,7 @@ app.delete("/form/delete/:id", (req, res)=>{
     Form.remove({
         _id: req.params.id
     }).then(()=>{
-        console.log("data delet");
+        console.log("data deleted !!");
         res.redirect("/");
     }).catch(err => console.log(err))
 })
