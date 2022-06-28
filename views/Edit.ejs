@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="/form/edit/<%= data._id%>?_method=PUT" method="post">
+        
+        <input type="hidden" name="_method" value="PUT">
+        
+        <label for="prenom">Prénom</label>
+        <input type="text" id="prenom" name="firstname" value="<%= data.firstname %>">
+            <br>
+        <label for="nom">Nom</label>-
+        <input type="text" id="Nom" name="lastname" value="<%= data.lastname %>">
+        <br>
+        <label for="mail">e-mail</label>
+        <input type="email" id="mail" name="email" value="<%= data.email %>">
+        <br>
+        <label for="message">message</label>
+        <textarea type="text" id="message" name="message">
+            <%= data.message %>
+        </textarea>
+
+        
+        <form action="/form/delete/<%= data._id %>?_method=DELETE" method="post">
+        <input type="hidden" name="_method" value="DELETE" />
+        <button type="submit">DELETE</button>
+        </form>
+
+
+
+        <input type="submit" value="Envoyer"> 
+    </form> 
+</body>
+</html>
