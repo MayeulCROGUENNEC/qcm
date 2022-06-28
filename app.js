@@ -129,6 +129,8 @@ app.delete("/form/delete/:id", (req, res)=>{
     }).catch(err => console.log(err))
 })
 
-var server = app.listen(5000, function(){
+const port = process.env.PORT || 5000; 
+
+var server = app.listen(port, function(){
     console.log("Node server is running");
 });
