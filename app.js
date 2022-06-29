@@ -129,6 +129,17 @@ app.delete("/form/delete/:id", (req, res)=>{
     }).catch(err => console.log(err))
 })
 
+//pour lier nos css
+app.use(express.static(__dirname + "/public"));
+
+app.get("/choice", (req,res)=>{
+    res.render("Choice");
+});
+
+
+
+
+
 const port = process.env.PORT || 5000; 
 
 var server = app.listen(port, function(){
