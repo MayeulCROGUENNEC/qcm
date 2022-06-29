@@ -10,6 +10,7 @@ const methodeOverride = require('method-override');
 //   // perform actions on the collection object
 //   client.close();
 // });
+app.use(express.static(__dirname + "/public"));
 
 const Form = require("./model/model");
 app.use(methodeOverride('_method'));
@@ -66,10 +67,8 @@ app.post("/submit-data-form", function(req, res){
     // }).catch(err=>console.log(err))
 
     const Data = new Form({
-        lastname: req.body.lastname,
-        firstname: req.body.firstname,
-        email: req.body.email,
-        message: req.body.message
+        pseudo: req.body.pseudo,
+        password: req.body. password,
     })
 
 Data.save().then(()=>{
