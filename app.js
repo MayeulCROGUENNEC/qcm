@@ -102,15 +102,18 @@ app.get('/form/edit/:id', (req, res) => {
         .catch(err => console.log(err));
 })
 
-app.put("/form/edit/:id", function(req, res){
+app.put("/qcm/edit/:id", function(req, res){
     // res.send("PUT request");
-    Form.findOne({
+    Qcm.findOne({
         _id: req.params.id
     }).then(data => {
-        data.lastname= req.body.lastname,
-        data.firstname= req.body.firstname,
-        data.email= req.body.email,
-        data.message= req.body.message  
+        data.titreQuestionnaire = req.body.titre,
+        data.auteur= req.body.auteur,
+        data.question = req.body.question,
+        data.reponse1 = req.body.rep1,
+        data.reponse2 = req.body.rep2,
+        data.reponse3 = req.body.rep3,
+        data.reponse4 = req.body.rep4,
         
         data.save().then(()=>{
             console.log("Data change !");
@@ -118,6 +121,10 @@ app.put("/form/edit/:id", function(req, res){
         }).catch(err => console.log(err));
     }).catch(err => console.log(err));
 })
+
+
+
+
 
 app.delete("/form/delete/:id", (req, res)=>{
     Form.remove({
@@ -143,6 +150,14 @@ app.get("/create", (req,res)=>{
 
     Qcm.find().then(data=>{
         res.render('Create', {data:data});
+    }).catch(err=>console.log(err));
+});
+
+app.get("/edit", (req,res)=>{
+    // res.render("Edit");
+
+    Qcm.find().then(data=>{
+        res.render('Edit', {data:data});
     }).catch(err=>console.log(err));
 });
 
