@@ -179,8 +179,26 @@ app.post("/create-qcm", (req,res)=>{
         });
 });
 
+//remplir les qcms 
+app.get("/fill", (req,res)=>{
+    // res.render("Create");
+
+    Qcm.find()
+    .then(data=>{
+        Qcm.distinct("titreQuestionnaire")
+        .then(titres => {
+            res.render('Fill', {data:data, titres:titres});
+        })
+        .catch(err => console.log(err))})
+    .catch(err=>console.log(err));
+
+});
 
 
+app.post("/submit-qcm", (req,res)=>{
+    res.render("Choice");
+
+});
 
 
 const port = process.env.PORT || 5000; 
