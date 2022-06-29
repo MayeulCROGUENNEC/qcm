@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create QCM</title>
+</head>
+<body>
+    <h1> Créer votre QCM </h1>
+    <form action="/create-qcm" method="post">
+
+        <label for="titre"> Titre du questionnaire</label>
+        <input type="text" id="titre" name="titre">
+        <br>
+
+        <label for="auteur"> Auteur </label>
+        <input type="text" id="auteur" name="auteur">
+        <br>
+
+        <label for="question"> Question</label>
+        <input type="text" id="question" name="question">
+        <br>
+
+        <label for="rep1">Réponse 1 </label>
+        <input type="text" id="rep1" name="rep1">
+        <br>
+
+        <label for="rep2">Réponse 2</label>
+        <input type="text" id="rep2" name="rep2">                                                                 
+        <br>
+
+        <label for="rep3">Réponse 3</label>
+        <input type="text" id="rep3" name="rep3">                                                                    
+        <br>
+
+        <label for="rep4">Réponse 4</label>
+        <input type="text" id="rep4" name="rep4">                                                                    
+        <br>
+
+        <input type="submit" value="Enregistrer">
+    </form>
+
+    <div>
+        <% data.forEach(element => { %>
+            <p> <%= element.titreQuestionnaire %>  </p>
+            <p> <%= element.question %>  </p>
+            <p> <%= element.auteur %>  </p>
+            <p> <%= element.reponse1 %>  </p>
+            <p> <%= element.reponse2 %>  </p>
+            <p> <%= element.reponse3 %>  </p>
+            <p> <%= element.reponse4 %>  </p>
+            <br>
+        <% }) %>
+    </div>
+</body>
+</html>

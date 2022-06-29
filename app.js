@@ -129,10 +129,39 @@ app.delete("/form/delete/:id", (req, res)=>{
 })
 
 //pour lier nos css
-app.use(express.static(__dirname + "/public"));
+const path = require('path');
+app.use(express.static(path.join(__dirname + "/public")));
 
 app.get("/choice", (req,res)=>{
     res.render("Choice");
+});
+
+const Qcm = require("./model/Qcm");
+
+app.get("/create", (req,res)=>{
+    // res.render("Create");
+
+    Qcm.find().then(data=>{
+        res.render('Create', {data:data});
+    }).catch(err=>console.log(err));
+});
+
+app.post("/create-qcm", (req,res)=>{
+    const Data = new Qcm({
+        titreQuestionnaire : req.body.titre,
+        auteur: req.body.auteur,
+        question : req.body.question,
+        reponse1 : req.body.rep1,
+        reponse2 : req.body.rep2,
+        reponse3 : req.body.rep3,
+        reponse4 : req.body.rep4,
+    })
+
+
+    Data.save().then(()=>{
+            console.log("Data saved !");
+            res.redirect("/create");
+        });
 });
 
 
