@@ -131,7 +131,7 @@ app.delete("/form/delete/:id", (req, res)=>{
 
 //pour lier nos css
 const path = require('path');
-app.use(express.static(path.join(__dirname + "/public")));
+app.use(express.static(__dirname + "/public"));
 
 app.get("/choice", (req,res)=>{
     res.render("Choice");
