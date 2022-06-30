@@ -9,7 +9,7 @@ h1{
 h2{
     font-size: 30px;
 }
-#pseudo{
+#email{
     margin-top: 2%;
 }
 #password{
@@ -24,7 +24,10 @@ h2{
     padding: 10px;
 }
 .Inscription{
+    display: inline-block;
     margin-top: 8%;
+    text-decoration: none;
+    color: #000;
 }
 .submit{
     margin-top: 2%;
