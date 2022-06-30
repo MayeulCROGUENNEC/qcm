@@ -1,6 +1,6 @@
 var express = require("express");
 var app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');   
+const bcrypt = require('bcrypt'); 
 const methodeOverride = require('method-override');
 // const uri = "mongodb+srv://Mayeul_Croguennec:MCroguennec@cluster0.objk9dm.mongodb.net/Formulaire/?retryWrites=true&w=majority";
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -10,7 +10,9 @@ const methodeOverride = require('method-override');
 //   // perform actions on the collection object
 //   client.close();
 // });
-app.use(express.static(__dirname + "/public"));
+
+const path = require('path');
+app.use(express.static(path.join(__dirname, "public")));
 
 const Form = require("./model/model");
 app.use(methodeOverride('_method'));
@@ -19,7 +21,8 @@ const { default: mongoose } = require("mongoose");
 app.use(bodyParser.urlencoded({extended: false}));
 app.set('view engine', 'ejs')
 
-const url = "mongodb+srv://Mayeul_Croguennec:MCroguennec@cluster0.objk9dm.mongodb.net/Formulaire?retryWrites=true&w=majority";
+require('dotenv').config();
+const url = process.env.DATABASE_URL;
 
 const connectionParams ={
     useNewUrlParser:true,
@@ -135,15 +138,14 @@ app.delete("/form/delete/:id", (req, res)=>{
     }).catch(err => console.log(err))
 })
 
-//pour lier nos css
-const path = require('path');
-app.use(express.static(path.join(__dirname + "/public")));
+
 
 app.get("/choice", (req,res)=>{
     res.render("Choice");
 });
 
 const Qcm = require("./model/Qcm");
+const { userInfo } = require("os");
 
 app.get("/create", (req,res)=>{
     // res.render("Create");
@@ -197,9 +199,54 @@ app.get("/fill", (req,res)=>{
 
 app.post("/submit-qcm", (req,res)=>{
     res.render("Choice");
-
 });
 
+
+//Inscription 
+const User = require('./model/User');
+
+app.get('/signin', (req, res) => {
+    res.render('Register');
+});
+
+app.post('/api/register', (req, res)=>{
+    const Data = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password, 5),
+        admin: false,
+    });
+    Data.save()
+    .then( () => {
+        console.log('User saved !');
+        res.redirect('/choice');
+    })
+    .catch(err => console.log(err));
+});
+
+//Connexion
+app.get('/login', (req, res) => {  
+    res.render('Login');
+});
+
+
+app.post('/api/login', (req, res) => {
+
+    User.findOne({ email : req.body.email})
+    .then((user) => {
+
+        if (!user){
+            return res.status(404).send('No user found');
+        }
+        console.log(user);
+        if ( !bcrypt.compareSync(req.body.password,user.password )){
+            return res.status(404).send('Invalid password!');
+        }
+        res.render('UserPage', {data : user})
+    })
+    .catch(err => console.log(err));
+
+});
 
 const port = process.env.PORT || 5000; 
 
