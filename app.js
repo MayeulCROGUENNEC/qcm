@@ -139,7 +139,6 @@ app.delete("/form/delete/:id", (req, res)=>{
 })
 
 
-
 app.get("/choice", (req,res)=>{
     res.render("Choice");
 });
@@ -153,9 +152,7 @@ app.get("/create/:id", (req,res)=>{
     User.findOne({ _id : req.params.id})
     .then( user => {
         if (user.admin){
-            Qcm.find().then(data=>{
-            res.render('Create', {data:data});
-            }).catch(err=>console.log(err));
+            res.render('Create', {user:user});
         }
         else{
             res.status(404).send("Vous n'avez pas l'accès");
@@ -183,7 +180,8 @@ app.get("/edit/:id", (req,res)=>{
 
 });
 
-app.post("/create-qcm", (req,res)=>{
+//enregistrer la question créée
+app.post("/create-qcm/:id", (req,res)=>{
     const Data = new Qcm({
         titreQuestionnaire : req.body.titre,
         auteur: req.body.auteur,
@@ -193,11 +191,10 @@ app.post("/create-qcm", (req,res)=>{
         reponse3 : req.body.rep3,
         reponse4 : req.body.rep4,
     })
-
-
+    var userId = req.params.id;
     Data.save().then(()=>{
             console.log("Data saved !");
-            res.redirect("/create");      
+            res.redirect("/profil/"+userId);      
         });
 });
 
@@ -268,6 +265,16 @@ app.post('/api/login', (req, res) => {
     .catch(err => console.log(err));
 
 });
+
+//page de profil 
+app.get('/profil/:id', (req, res)=> {
+    User.findOne({_id: req.params.id})
+    .then( (user) => {
+        res.render('UserPage', {data : user})
+    })
+    .catch(err => {console.log(err)})
+}); 
+
 
 const port = process.env.PORT || 5000; 
 
