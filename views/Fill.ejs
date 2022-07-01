@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- include("partials/Bootstrap.ejs") %>
+    <link rel="stylesheet" href="css/fill.css">
+    <title>Fill QCM</title>
+    
+</head>
+<body>
+
+    <%- include("partials/Navbar.ejs") %> 
+
+    <h1> C'est parti ! </h1>
+    <p classe="descri">Retrouvez ici tous nos quiz</p>
+    <div class="line"></div>    
+
+
+    <% titres.forEach(titre => { %>
+        <h3 class="spacing1"> <%= titre %>  </h3>
+       
+    <form action="/submit-qcm" method="post">
+
+
+        <% data.forEach(element => { %>
+
+            <p> <%= element.question %>  </p>
+
+            <div class="spacing1"><% if (element.reponse1) { %></div>
+                <input type="checkbox" id="rep1" name="rep1" value="">
+                <label for="rep1" class="spacing"> <%= element.reponse1 %> </label>
+                <br>
+            <% } %>
+        
+
+            <% if (element.reponse2) { %>
+                <input type="checkbox" id="rep2" name="rep2" value="">
+                <label for="rep2" class="spacing"> <%= element.reponse2 %> </label>
+                <br>
+             <% } %>
+        
+
+            <% if (element.reponse3) { %>
+                <input type="checkbox" id="rep3" name="rep3" value="">
+                <label for="rep3"> <%= element.reponse3 %> </label>
+                <br>
+                
+            <% } %>
+
+            <% if (element.reponse4) { %>
+                <input type="checkbox" id="rep4" name="rep4" value="">
+                <label for="rep4"> <%= element.reponse4 %> </label>
+                <br>
+                
+            <% } %>
+        
+
+        <% }) %>
+        <input type="submit" value="Valider" class="confirmed">
+
+        <div class="line"></div>
+
+    </form>    
+    <% }) %>
+
+</body>
+</html>

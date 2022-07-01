@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fill QCM</title>
+</head>
+<body>
+    <h1> C'est parti </h1>
+    <form action="/create-qcm" method="post">
+
+
+        <% data.forEach(element => { %>
+
+
+            <p> <%= element.titreQuestionnaire %>  </p>
+            <p> <%= element.question %>  </p>
+            <p> <%= element.auteur %>  </p>
+
+            
+        
+        <input type="checkbox" id="rep1" name="rep1" value="">
+        <label for="rep1"> <%= element.reponse1 %> </label>
+        <br>
+        <input type="checkbox" id="rep2" name="rep2" value="">
+        <label for="rep2"> <%= element.reponse2 %> </label>
+        <br>
+        <input type="checkbox" id="rep3" name="rep3" value="">
+        <label for="rep3"> <%= element.reponse3 %> </label>
+        <br>
+        <input type="checkbox" id="rep4" name="rep4" value="">
+        <label for="rep4"> <%= element.reponse4 %> </label>
+        <br>
+
+       
+
+
+            
+        <% }) %>
+
+        <label for="titre"> Titre  </label>
+        <input type="text" id="titre" name="titre" value="<%= data.titreQuestionnaire %>">
+        <br>
+
+        <label for="auteur"> Auteur </label>
+        <input type="text" id="auteur" name="auteur" value="<%= data.auteur %>" >
+        <br>
+
+        <label for="question"> Question </label>
+        <input type="text" id="question" name="question" value="<%= data.question %>">
+        <br>
+
+        <label for="rep1"> * </label>
+        <input type="checkbox" id="rep1" name="rep1" value="<%= data.reponse1 %>">
+        <br>
+
+        <label for="rep2"> <%= data.reponse2 %>  </label>
+        <input type="text" id="rep2" name="rep2" value="<%= data.reponse2 %>">                                                                 
+        <br>
+
+        <label for="rep3"> <%= data.reponse3 %>  </label>
+        <input type="text" id="rep3" name="rep3" value="<%= data.reponse3 %>">                                                                    
+        <br>
+
+        <label for="rep4"> <%= data.reponse4 %> </label>
+        <input type="text" id="rep4" name="rep4" value="<%= data.reponse4 %>">                                                                    
+        <br>
+
+        <input type="submit" value="Valider">
+
+    </form>
+
+    <div>
+        <% data.forEach(element => { %>
+            <p> <%= element.titreQuestionnaire %>  </p>
+            <p> <%= element.question %>  </p>
+            <p> <%= element.auteur %>  </p>
+            <p> <%= element.reponse1 %>  </p>
+            <p> <%= element.reponse2 %>  </p>
+            <p> <%= element.reponse3 %>  </p>
+            <p> <%= element.reponse4 %>  </p>
+            <br>
+        <% }) %>
+    </div>
+</body>
+</html>

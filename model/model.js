@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 
 const formSchema = mongoose.Schema({
-    lastname : {type: String, require : true},
-    firstname : {type: String, require : true},
-    email : {type: String, require : true},
-    message : {type: String, require : true},
+    pseudo : {type: String, require : true},
+    password : {type: String, require : true},
 });
-module.exports = mongoose.model('Form', formSchema)
+module.exports = mongoose.model('Form', formSchema);
