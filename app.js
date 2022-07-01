@@ -147,20 +147,40 @@ app.get("/choice", (req,res)=>{
 const Qcm = require("./model/Qcm");
 const { userInfo } = require("os");
 
-app.get("/create", (req,res)=>{
+app.get("/create/:id", (req,res)=>{
     // res.render("Create");
 
-    Qcm.find().then(data=>{
-        res.render('Create', {data:data});
-    }).catch(err=>console.log(err));
+    User.findOne({ _id : req.params.id})
+    .then( user => {
+        if (user.admin){
+            Qcm.find().then(data=>{
+            res.render('Create', {data:data});
+            }).catch(err=>console.log(err));
+        }
+        else{
+            res.status(404).send("Vous n'avez pas l'accès");
+        }
+    })
+    .catch(err=>console.log(err));
+
+    
 });
 
-app.get("/edit", (req,res)=>{
-    // res.render("Edit");
+app.get("/edit/:id", (req,res)=>{
 
-    Qcm.find().then(data=>{
-        res.render('Edit', {data:data});
-    }).catch(err=>console.log(err));
+    User.findOne({ _id : req.params.id})
+    .then( user => {
+        if (user.admin){
+            Qcm.find().then(data=>{
+            res.render('Edit', {data:data});
+            }).catch(err=>console.log(err));
+        }
+        else{
+            res.status(404).send("Vous n'avez pas l'accès");
+        }
+    })
+    .catch(err=>console.log(err));
+
 });
 
 app.post("/create-qcm", (req,res)=>{
@@ -177,7 +197,7 @@ app.post("/create-qcm", (req,res)=>{
 
     Data.save().then(()=>{
             console.log("Data saved !");
-            res.redirect("/create");
+            res.redirect("/create");      
         });
 });
 
@@ -198,7 +218,7 @@ app.get("/fill", (req,res)=>{
 
 
 app.post("/submit-qcm", (req,res)=>{
-    res.render("Choice");
+    res.redirect("/choice");
 });
 
 
@@ -219,7 +239,8 @@ app.post('/api/register', (req, res)=>{
     Data.save()
     .then( () => {
         console.log('User saved !');
-        res.redirect('/choice');
+        res.render('UserPage', {data : Data});
+        // res.redirect('/choice');
     })
     .catch(err => console.log(err));
 });
@@ -253,3 +274,4 @@ const port = process.env.PORT || 5000;
 var server = app.listen(port, function(){
     console.log("Node server is running");
 });
+

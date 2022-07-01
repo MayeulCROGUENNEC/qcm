@@ -10,21 +10,24 @@
 </head>
 
 <body>
+
     <section class="login-container">
         <h1>Bienvenue</h1>
         <h2>Veuillez-vous connecter</h2>
-        <form action="/submit-data-form" method="post">
-            <label for="prenom">Pseudo</label>
-            <input type="text" id="pseudo" name="pseudo">
+        <form action="/api/login" method="post">
+            <label for="email">Email </label>
+            <input type="email" id="email"  name="email">
             <br>
-            <label for="password">Password</label>
+            <label for="password">Mot de passe</label>
             <input type="text" id="password" name="password">
             <br>
-            <input type="submit" value="Envoyer" class="button submit">
+            <input type="submit" value="Connexion" class="button submit">
             <br>
-            <a href="#"><input type="submit" value="Inscription" class="button Inscription"></a>
         </form>
+
+        <a href="/signin" class="button Inscription">Inscription</a>
     </section>
+
 </body>
 
 </html>

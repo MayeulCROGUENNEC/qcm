@@ -4,12 +4,42 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- include("partials/Bootstrap.ejs") %> 
+    
     <title>Document</title>
 </head>
 <body>
 
     <%- include("partials/Navbar.ejs") %> 
+    
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col d-flex justify-content-center">
 
-    <%= data %> 
+                    <div class="card" style="width: 26rem;">
+                        <div class="card-body">
+                          <h5 class="card-title text-center">Profil</h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item">Username : <%= data.username %> </li>
+                          <li class="list-group-item">Email : <%= data.email %> </li>
+                          <li class="list-group-item"> Mot de passe : ******** </li>
+                        </ul>
+                        <div class="card-body">
+
+                            <% if (data.admin) { %>
+
+                          <a href="/create/<%= data._id %>" class="card-link">Créer un QCM</a>
+                          <a href="/edit/<%= data._id %>" class="card-link">Modifier les QCMs</a>
+                          
+                          <% } %>
+                          
+                          <a href="/fill" class="card-link">Faire un QCM</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     
 </body>
 </html>
