@@ -5,51 +5,52 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%- include("partials/Bootstrap.ejs") %>
-    <link rel="stylesheet" href="css/edit.css">
+    <link rel="stylesheet" href="/css/edit.css">
+   
     <title>Create QCM</title>
 </head>
 <body>
     <%- include("partials/Navbar.ejs") %>
 
-    <h1> Créez votre QCM </h1>
+    <h1> Editez Vos QCM </h1>
     
         <% data.forEach(element => { %>
        <form action="/qcm/edit/<%= user._id%>/<%= element._id%>?_method=PUT" method="post">
 
         <input type="hidden" name="_method" value="PUT">
     
-        <label for="titre">Titre du questionnaire</label>
+        <label for="titre" class="descri">Titre du questionnaire</label>
         <input type="text" id="titre" name="titre" value="<%= element.titreQuestionnaire %>">
         <br>
-        <label for="auteur"> Auteur </label>
+        <label for="auteur" class="spacing1"> Auteur </label>
         <input type="text" class="spacing"id="auteur" name="auteur" value="<%= element.auteur %>">
         <br>
-        <label for="question"> Question</label>
+        <label for="question" class="spacing1"> Question</label>
         <input type="text" class="spacing"id="question" name="question" value="<%= element.question %>">
         <br>
-        <label for="rep1">Réponse 1 </label>
+        <label for="rep1" class="spacing1">Réponse 1 </label>
         <input type="text" class="spacing"id="rep1" name="rep1" value="<%= element.reponse1 %>">
         <br>
-        <label for="rep2">Réponse 2</label>
+        <label for="rep2" class="spacing1">Réponse 2</label>
         <input type="text" class="spacing"id="rep2" name="rep2" value="<%= element.reponse2 %>">                                                                 
         <br>
-        <label for="rep3">Réponse 3</label>
+        <label for="rep3" class="spacing1">Réponse 3</label>
         <input type="text" class="spacing"id="rep3" name="rep3" value="<%= element.reponse3 %>">                                                                    
         <br>
-        <label for="rep4">Réponse 4</label>
+        <label for="rep4" class="spacing1">Réponse 4</label>
         <input type="text" class="spacing"id="rep4" name="rep4" value="<%= element.reponse4 %>">                                                                    
         <br>
         <input type="submit" value="Enregistrer" class="confirmed">
         <br>
-        <div class="line"></div>
     </form>
 
     <form action="/qcm/delete/<%= user._id%>/<%= element._id%>?_method=DELETE" method="post">
         <input type="hidden" name="_method" value="DELETE">
-        <button type="submit">
+        <button type="submit" class="confirmed">
             Delete
         </button>
     </form>   
+    <div class="line"></div>
         <% }) %>
 
 </body>
