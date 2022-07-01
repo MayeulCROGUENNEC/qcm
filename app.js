@@ -269,6 +269,16 @@ app.post('/api/login', (req, res) => {
 
 });
 
+//page de profil 
+app.get('/profil/:id', (req, res)=> {
+    User.findOne({_id: req.params.id})
+    .then( (user) => {
+        res.render('UserPage', {data : user})
+    })
+    .catch(err => {console.log(err)})
+}); 
+
+
 const port = process.env.PORT || 5000; 
 
 var server = app.listen(port, function(){
