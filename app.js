@@ -152,9 +152,7 @@ app.get("/create/:id", (req,res)=>{
     User.findOne({ _id : req.params.id})
     .then( user => {
         if (user.admin){
-            Qcm.find().then(data=>{
-            res.render('Create', {data:data});
-            }).catch(err=>console.log(err));
+            res.render('Create', {user:user});
         }
         else{
             res.status(404).send("Vous n'avez pas l'accès");
@@ -182,7 +180,8 @@ app.get("/edit/:id", (req,res)=>{
 
 });
 
-app.post("/create-qcm", (req,res)=>{
+//enregistrer la question créée
+app.post("/create-qcm/:id", (req,res)=>{
     const Data = new Qcm({
         titreQuestionnaire : req.body.titre,
         auteur: req.body.auteur,
@@ -192,11 +191,10 @@ app.post("/create-qcm", (req,res)=>{
         reponse3 : req.body.rep3,
         reponse4 : req.body.rep4,
     })
-
-
+    var userId = req.params.id;
     Data.save().then(()=>{
             console.log("Data saved !");
-            res.redirect("/create");      
+            res.redirect("/profil/"+userId);      
         });
 });
 
