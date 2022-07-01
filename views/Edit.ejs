@@ -14,7 +14,7 @@
     <h1> Créez votre QCM </h1>
     
         <% data.forEach(element => { %>
-       <form action="/qcm/edit/<%= element._id%>?_method=PUT" method="post">
+       <form action="/qcm/edit/<%= user._id%>/<%= element._id%>?_method=PUT" method="post">
 
         <input type="hidden" name="_method" value="PUT">
     
@@ -43,6 +43,13 @@
         <br>
         <div class="line"></div>
     </form>
+
+    <form action="/qcm/delete/<%= user._id%>/<%= element._id%>?_method=DELETE" method="post">
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit">
+            Delete
+        </button>
+    </form>   
         <% }) %>
 
 </body>

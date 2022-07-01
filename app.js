@@ -105,10 +105,10 @@ app.get('/form/edit/:id', (req, res) => {
         .catch(err => console.log(err));
 })
 
-app.put("/qcm/edit/:id", function(req, res){
+app.put("/qcm/edit/:userId/:questionId", function(req, res){
     // res.send("PUT request");
     Qcm.findOne({
-        _id: req.params.id
+        _id: req.params.questionId
     }).then(data => {
         data.titreQuestionnaire = req.body.titre,
         data.auteur= req.body.auteur,
@@ -120,7 +120,7 @@ app.put("/qcm/edit/:id", function(req, res){
         
         data.save().then(()=>{
             console.log("Data change !");
-            res.redirect('/');
+            res.redirect("/edit/"+req.params.userId);
         }).catch(err => console.log(err));
     }).catch(err => console.log(err));
 })
@@ -129,12 +129,12 @@ app.put("/qcm/edit/:id", function(req, res){
 
 
 
-app.delete("/form/delete/:id", (req, res)=>{
-    Form.remove({
-        _id: req.params.id
+app.delete("/qcm/delete/:userId/:questionId", (req, res)=>{
+    Qcm.remove({
+        _id: req.params.questionId
     }).then(()=>{
         console.log("data deleted !!");
-        res.redirect("/");
+        res.redirect("/edit/"+req.params.userId);
     }).catch(err => console.log(err))
 })
 
@@ -172,7 +172,7 @@ app.get("/edit/:id", (req,res)=>{
     .then( user => {
         if (user.admin){
             Qcm.find().then(data=>{
-            res.render('Edit', {data:data});
+            res.render('Edit', {data:data, user:user});
             }).catch(err=>console.log(err));
         }
         else{
