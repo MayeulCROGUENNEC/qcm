@@ -1,12 +1,16 @@
 body {
     text-align: center;
+    padding-bottom: 5%;
 }
 
 h1{
     padding-top: 7%;
     font-size: 35px;
 }
-.descri{}
+.descri{
+    font-size: 20px;
+}
+
 h3{
     margin-top: 3%;
 }
@@ -18,9 +22,7 @@ h3{
     transform: translateX(-50%);
     margin-top: 4%;
 }
-.spacing{
-    margin-top: 1%;
-}
+
 .spacing1{
     padding-top: 2%;
 }

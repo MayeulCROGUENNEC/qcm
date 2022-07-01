@@ -14,7 +14,7 @@
     <%- include("partials/Navbar.ejs") %> 
 
     <h1> C'est parti ! </h1>
-    <p classe="descri">Retrouvez ici tous nos quiz</p>
+    <p class="descri">Retrouvez ici tous nos quiz</p>
     <div class="line"></div>    
 
 
@@ -25,19 +25,21 @@
 
 
         <% data.forEach(element => { %>
-
-            <p> <%= element.question %>  </p>
-
-            <div class="spacing1"><% if (element.reponse1) { %></div>
+             
+            <div class="spacing1">
+            <%= element.question %>
+            <br>
+            <br>
+            <% if (element.reponse1) { %>
                 <input type="checkbox" id="rep1" name="rep1" value="">
-                <label for="rep1" class="spacing"> <%= element.reponse1 %> </label>
+                <label for="rep1" > <%= element.reponse1 %> </label>
                 <br>
             <% } %>
         
 
             <% if (element.reponse2) { %>
                 <input type="checkbox" id="rep2" name="rep2" value="">
-                <label for="rep2" class="spacing"> <%= element.reponse2 %> </label>
+                <label for="rep2" > <%= element.reponse2 %> </label>
                 <br>
              <% } %>
         
@@ -46,7 +48,6 @@
                 <input type="checkbox" id="rep3" name="rep3" value="">
                 <label for="rep3"> <%= element.reponse3 %> </label>
                 <br>
-                
             <% } %>
 
             <% if (element.reponse4) { %>
@@ -55,12 +56,16 @@
                 <br>
                 
             <% } %>
+            </div>
         
 
         <% }) %>
+        <br>
+        <textarea name="com" id="com" cols="80" rows="8" placeholder="N'hésitez pas à donnez votre avis"></textarea>
+        <br>
         <input type="submit" value="Valider" class="confirmed">
-
         <div class="line"></div>
+
 
     </form>    
     <% }) %>
