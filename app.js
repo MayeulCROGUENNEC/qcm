@@ -139,9 +139,13 @@ app.delete("/qcm/delete/:userId/:questionId", (req, res)=>{
 })
 
 
+app.get("/choice/:id", (req,res)=>{
 
-app.get("/choice", (req,res)=>{
-    res.render("Choice");
+    User.findOne({_id: req.params.id})
+    .then((user)=>{
+        res.render("Choice", {user: user});
+    })
+    
 });
 
 const Qcm = require("./model/Qcm");
@@ -153,9 +157,7 @@ app.get("/create/:id", (req,res)=>{
     User.findOne({ _id : req.params.id})
     .then( user => {
         if (user.admin){
-            Qcm.find().then(data=>{
-            res.render('Create', {data:data});
-            }).catch(err=>console.log(err));
+            res.render('Create', {user:user});
         }
         else{
             res.status(404).send("Vous n'avez pas l'accès");
@@ -183,7 +185,8 @@ app.get("/edit/:id", (req,res)=>{
 
 });
 
-app.post("/create-qcm", (req,res)=>{
+//enregistrer la question créée
+app.post("/create-qcm/:id", (req,res)=>{
     const Data = new Qcm({
         titreQuestionnaire : req.body.titre,
         auteur: req.body.auteur,
@@ -193,32 +196,35 @@ app.post("/create-qcm", (req,res)=>{
         reponse3 : req.body.rep3,
         reponse4 : req.body.rep4,
     })
-
-
+    var userId = req.params.id;
     Data.save().then(()=>{
             console.log("Data saved !");
-            res.redirect("/create");      
+            res.redirect("/profil/"+userId);      
         });
 });
 
 //remplir les qcms 
-app.get("/fill", (req,res)=>{
-    // res.render("Create");
+app.get("/fill/:id", (req,res)=>{
+    User.findOne({ _id : req.params.id})
+    .then( user => {
 
-    Qcm.find()
-    .then(data=>{
+        Qcm.find()
+        .then(data=>{
         Qcm.distinct("titreQuestionnaire")
         .then(titres => {
-            res.render('Fill', {data:data, titres:titres});
+            res.render('Fill', {data:data, titres:titres, user:user});
         })
         .catch(err => console.log(err))})
     .catch(err=>console.log(err));
+    })
+    .catch(err=>console.log(err));
+    
 
 });
 
 
 app.post("/submit-qcm", (req,res)=>{
-    res.redirect("/choice");
+    res.redirect("/fill");
 });
 
 
@@ -239,7 +245,7 @@ app.post('/api/register', (req, res)=>{
     Data.save()
     .then( () => {
         console.log('User saved !');
-        res.render('UserPage', {data : Data});
+        res.render('UserPage', {user : Data});
         // res.redirect('/choice');
     })
     .catch(err => console.log(err));
@@ -263,11 +269,21 @@ app.post('/api/login', (req, res) => {
         if ( !bcrypt.compareSync(req.body.password,user.password )){
             return res.status(404).send('Invalid password!');
         }
-        res.render('UserPage', {data : user})
+        res.render('UserPage', {user : user})
     })
     .catch(err => console.log(err));
 
 });
+
+//page de profil 
+app.get('/profil/:id', (req, res)=> {
+    User.findOne({_id: req.params.id})
+    .then( (user) => {
+        res.render('UserPage', {user : user})
+    })
+    .catch(err => {console.log(err)})
+}); 
+
 
 const port = process.env.PORT || 5000; 
 
