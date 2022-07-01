@@ -139,8 +139,13 @@ app.delete("/qcm/delete/:userId/:questionId", (req, res)=>{
 })
 
 
-app.get("/choice", (req,res)=>{
-    res.render("Choice");
+app.get("/choice/:id", (req,res)=>{
+
+    User.findOne({_id: req.params.id})
+    .then((user)=>{
+        res.render("Choice", {user: user});
+    })
+    
 });
 
 const Qcm = require("./model/Qcm");
@@ -199,23 +204,27 @@ app.post("/create-qcm/:id", (req,res)=>{
 });
 
 //remplir les qcms 
-app.get("/fill", (req,res)=>{
-    // res.render("Create");
+app.get("/fill/:id", (req,res)=>{
+    User.findOne({ _id : req.params.id})
+    .then( user => {
 
-    Qcm.find()
-    .then(data=>{
+        Qcm.find()
+        .then(data=>{
         Qcm.distinct("titreQuestionnaire")
         .then(titres => {
-            res.render('Fill', {data:data, titres:titres});
+            res.render('Fill', {data:data, titres:titres, user:user});
         })
         .catch(err => console.log(err))})
     .catch(err=>console.log(err));
+    })
+    .catch(err=>console.log(err));
+    
 
 });
 
 
 app.post("/submit-qcm", (req,res)=>{
-    res.redirect("/choice");
+    res.redirect("/fill");
 });
 
 
@@ -236,7 +245,7 @@ app.post('/api/register', (req, res)=>{
     Data.save()
     .then( () => {
         console.log('User saved !');
-        res.render('UserPage', {data : Data});
+        res.render('UserPage', {user : Data});
         // res.redirect('/choice');
     })
     .catch(err => console.log(err));
@@ -260,7 +269,7 @@ app.post('/api/login', (req, res) => {
         if ( !bcrypt.compareSync(req.body.password,user.password )){
             return res.status(404).send('Invalid password!');
         }
-        res.render('UserPage', {data : user})
+        res.render('UserPage', {user : user})
     })
     .catch(err => console.log(err));
 
@@ -270,7 +279,7 @@ app.post('/api/login', (req, res) => {
 app.get('/profil/:id', (req, res)=> {
     User.findOne({_id: req.params.id})
     .then( (user) => {
-        res.render('UserPage', {data : user})
+        res.render('UserPage', {user : user})
     })
     .catch(err => {console.log(err)})
 }); 
