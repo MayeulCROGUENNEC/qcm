@@ -1,18 +1,18 @@
 const mongoose = require('mongoose');
 
 const reponseSchema = mongoose.Schema({
-    userid: {type: Number, required : true},
-    email: {type: String, required : true},
-    password: {type: String, required : true},
-    admin: {type: Boolean},
-
-    titreQuestionnaire : { type: String, required : false},
+    
+    questionnaire : { type: String, required : false},
     auteur: { type: String, required : false},
-    question : { type: String, required : true},
-    reponse1 : {type: Boolean},
-    reponse2 : {type: Boolean},
-    reponse3 : {type: Boolean},
-    reponse4 : {type: Boolean},
+    user : { type: String, required : false},
+    questions : [ {
+        description : { type: String, required : false},
+        reponse1 : new mongooseSchema({text: String, isChecked: Boolean}),
+        reponse2 : new mongooseSchema({text: String, isChecked: Boolean}),
+        reponse3 : new mongooseSchema({text: String, isChecked: Boolean}),
+        reponse4 : new mongooseSchema({text: String, isChecked: Boolean}),
+    }]
+
 });
 
 

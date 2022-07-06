@@ -15,6 +15,8 @@ const path = require('path');
 app.use(express.static(path.join(__dirname, "public")));
 
 const Form = require("./model/model");
+const Qcm = require("./model/Qcm");
+
 app.use(methodeOverride('_method'));
 var bodyParser = require("body-parser");
 const { default: mongoose } = require("mongoose");
@@ -105,18 +107,29 @@ app.get('/form/edit/:id', (req, res) => {
         .catch(err => console.log(err));
 })
 
-app.put("/qcm/edit/:userId/:questionId", function(req, res){
+app.put("/qcm/edit/:userId/:qcmId/", function(req, res){
     // res.send("PUT request");
+    // console.log(req.body.questionId);
     Qcm.findOne({
-        _id: req.params.questionId
+        _id: req.params.qcmId,/*  "questions._id ": req.body.questionId, */
     }).then(data => {
-        data.titreQuestionnaire = req.body.titre,
-        data.auteur= req.body.auteur,
-        data.question = req.body.question,
-        data.reponse1 = req.body.rep1,
-        data.reponse2 = req.body.rep2,
-        data.reponse3 = req.body.rep3,
-        data.reponse4 = req.body.rep4,
+        console.log(req.body);
+        // console.log(data.questions.id(req.body.questionId).description);
+        // data.questions.id(req.body.questionId).description =  "q";
+        // console.log(data.questions.id(req.body.questionId).description);
+        // console.log(data.children[0]);
+        if (req.body.titre){
+            data.titreQuestionnaire = req.body.titre;
+        }
+        else{
+            data.questions.id(req.body.questionId).description =  req.body.description;
+            data.questions.id(req.body.questionId).reponse1 =  req.body.rep1;
+            data.questions.id(req.body.questionId).reponse2 =  req.body.rep2;
+            data.questions.id(req.body.questionId).reponse3 =  req.body.rep3;
+            data.questions.id(req.body.questionId).reponse4 =  req.body.rep4;
+        }
+        
+
         
         data.save().then(()=>{
             console.log("Data change !");
@@ -126,19 +139,39 @@ app.put("/qcm/edit/:userId/:questionId", function(req, res){
 })
 
 
+app.delete("/qcm/delete/:userId/:qcmId/", (req, res)=>{
 
+    console.log( "body     :");
+    console.log(req.body);
 
-
-app.delete("/qcm/delete/:userId/:questionId", (req, res)=>{
-    Qcm.remove({
-        _id: req.params.questionId
-    }).then(()=>{
-        console.log("data deleted !!");
+    if (req.body.titre){
+        Qcm.remove({_id: req.params.qcmId})
+        .then(()=>{
+            console.log("data deleted !!");
         res.redirect("/edit/"+req.params.userId);
+        }).catch(err => console.log(err))
+    }
+    else {
+
+
+        Qcm.findOne({
+        _id: req.params.qcmId
+    }).then(data =>{
+        console.log(data);
+        console.log(data.questions.id(req.body.questionId));
+        data.questions.id(req.body.questionId).remove();
+        data.save().then(()=>{
+            console.log("data deleted !!");
+        res.redirect("/edit/"+req.params.userId);
+        }).catch(err => console.log(err))
+        
     }).catch(err => console.log(err))
+    }
+
+    
 })
 
-
+//page permettant de choisir les différentes fonctionnalités 
 app.get("/choice/:id", (req,res)=>{
 
     User.findOne({_id: req.params.id})
@@ -148,9 +181,10 @@ app.get("/choice/:id", (req,res)=>{
     
 });
 
-const Qcm = require("./model/Qcm");
+
 const { userInfo } = require("os");
 
+//page pour créer un qcm
 app.get("/create/:id", (req,res)=>{
     // res.render("Create");
 
@@ -168,6 +202,7 @@ app.get("/create/:id", (req,res)=>{
     
 });
 
+//page pour modifier les questions 
 app.get("/edit/:id", (req,res)=>{
 
     User.findOne({ _id : req.params.id})
@@ -187,20 +222,54 @@ app.get("/edit/:id", (req,res)=>{
 
 //enregistrer la question créée
 app.post("/create-qcm/:id", (req,res)=>{
-    const Data = new Qcm({
-        titreQuestionnaire : req.body.titre,
-        auteur: req.body.auteur,
-        question : req.body.question,
-        reponse1 : req.body.rep1,
-        reponse2 : req.body.rep2,
-        reponse3 : req.body.rep3,
-        reponse4 : req.body.rep4,
+
+
+    Qcm.findOne({titreQuestionnaire : req.body.titre})
+    .then(qcm => {
+
+        console.log(qcm);
+        var userId = req.params.id;
+
+
+        if(qcm){
+            qcm.questions.push({
+                description:  req.body.question,
+            reponse1 : req.body.rep1,
+            reponse2 : req.body.rep2, 
+            reponse3 : req.body.rep3, 
+            reponse4 : req.body.rep4
+
+            })
+
+
+            qcm.save().then(()=>{
+                console.log("Data saved !");
+                console.log(qcm);
+                res.redirect("/profil/"+userId); 
+            })
+        }
+        else
+        {
+            const Data = new Qcm({
+                titreQuestionnaire : req.body.titre,
+                auteur: req.params.id,
+                questions : [{description:  req.body.question,
+                    reponse1 : req.body.rep1,
+                    reponse2 : req.body.rep2, 
+                    reponse3 : req.body.rep3, 
+                    reponse4 : req.body.rep4
+                }],
+            })
+            
+            Data.save().then(()=>{
+                    console.log("Data saved !");
+                    console.log(Data);
+                    res.redirect("/profil/"+userId);      
+            });
+        }
     })
-    var userId = req.params.id;
-    Data.save().then(()=>{
-            console.log("Data saved !");
-            res.redirect("/profil/"+userId);      
-        });
+    .catch(err => console.log(err));
+    
 });
 
 //remplir les qcms 
