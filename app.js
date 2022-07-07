@@ -16,6 +16,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const Form = require("./model/model");
 const Qcm = require("./model/Qcm");
+const Reponse = require("./model/Reponse");
 
 app.use(methodeOverride('_method'));
 var bodyParser = require("body-parser");
@@ -292,8 +293,48 @@ app.get("/fill/:id", (req,res)=>{
 });
 
 
-app.post("/submit-qcm", (req,res)=>{
-    res.redirect("/fill");
+app.post("/submit-qcm/:userId/:qcmId", (req,res)=>{
+
+    console.log('Body  :');
+    console.log(req.body)
+    Qcm.findOne({ _id : req.params.qcmId})
+    .then(data => {
+        console.log('Data :   ');
+        console.log(data);
+        // const Data = new Reponse({
+        //     idquestionnaire : data._id,
+        //     titreQuestionnaire : data.titreQuestionnaire,
+        //     auteur : data.auteur,
+        //     utilisateur : req.params.userId,
+        //     questions : [{
+        //         description : data.
+        //     }]
+
+        // })
+
+        // data.questions.forEach(q => {
+
+        // })
+
+        // var reponses = [];
+        // reponses.push({description:  q.description,
+        //             reponse1 : q.reponse1,
+        //             reponse2 : req.body.rep2, 
+        //             reponse3 : req.body.rep3, 
+        //             reponse4 : req.body.rep4
+        //         })
+
+    //     questions : [{description:  req.body.question,
+    //         reponse1 : req.body.rep1,
+    //         reponse2 : req.body.rep2, 
+    //         reponse3 : req.body.rep3, 
+    //         reponse4 : req.body.rep4
+    //     }],
+    // })
+    })
+
+
+    // res.redirect("/fill");
 });
 
 
