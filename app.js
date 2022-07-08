@@ -11,6 +11,10 @@ const methodeOverride = require('method-override');
 //   client.close();
 // });
 
+var cors = require('cors');
+app.use(cors());
+
+
 const path = require('path');
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -355,15 +359,22 @@ app.post('/api/register', (req, res)=>{
     Data.save()
     .then( () => {
         console.log('User saved !');
-        res.render('UserPage', {user : Data});
+        // res.json(Data);
+        // res.redirect('http://localhost:3000/login');
+        // res.render('UserPage', {user : Data});
         // res.redirect('/choice');
+        res.redirect('http://localhost:3000/');
     })
     .catch(err => console.log(err));
 });
 
 //Connexion
 app.get('/login', (req, res) => {  
-    res.render('Login');
+    // res.render('Login');
+    
+    Form.find().then(data=>{
+        res.render('Home', {data:data});
+    }).catch(err=>console.log(err));
 });
 
 
