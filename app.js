@@ -2,6 +2,7 @@ var express = require("express");
 var app = express();
 const bcrypt = require('bcrypt'); 
 const methodeOverride = require('method-override');
+const {createTokens, validateTokens} = require("./JWT");
 // const uri = "mongodb+srv://Mayeul_Croguennec:MCroguennec@cluster0.objk9dm.mongodb.net/Formulaire/?retryWrites=true&w=majority";
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 // client.connect(err => {
@@ -363,7 +364,7 @@ app.post('/api/register', (req, res)=>{
         // res.redirect('http://localhost:3000/login');
         // res.render('UserPage', {user : Data});
         // res.redirect('/choice');
-        res.redirect('http://localhost:3000/');
+        res.redirect('http://localhost:3000/profil/'+Data._id);
     })
     .catch(err => console.log(err));
 });
@@ -390,14 +391,23 @@ app.post('/api/login', (req, res) => {
         if ( !bcrypt.compareSync(req.body.password,user.password )){
             return res.status(404).send('Invalid password!');
         }
-        res.render('UserPage', {user : user})
+
+        const accessToken = createTokens(user);
+        console.log("Access token");
+        res.cookie("access-token", accessToken,  
+        {maxAge: 60 * 60 * 24 *30 * 1000, httpOnly: true,});
+        res.json("Logged in successfully");
+
+
+        res.redirect('http://localhost:3000/profil/'+user._id); 
+        // res.render('UserPage', {user : user})
     })
     .catch(err => console.log(err));
 
 });
 
 //page de profil 
-app.get('/profil/:id', (req, res)=> {
+app.get('/profil/:id', validateTokens, (req, res)=> {
     User.findOne({_id: req.params.id})
     .then( (user) => {
         res.render('UserPage', {user : user})
