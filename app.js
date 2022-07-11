@@ -3,6 +3,10 @@ var app = express();
 const bcrypt = require('bcrypt'); 
 const methodeOverride = require('method-override');
 const {createTokens, validateTokens} = require("./JWT");
+
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
 // const uri = "mongodb+srv://Mayeul_Croguennec:MCroguennec@cluster0.objk9dm.mongodb.net/Formulaire/?retryWrites=true&w=majority";
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 // client.connect(err => {
@@ -395,8 +399,10 @@ app.post('/api/login', (req, res) => {
         const accessToken = createTokens(user);
         console.log("Access token");
         res.cookie("access-token", accessToken,  
-        {maxAge: 60 * 60 * 24 *30 * 1000, httpOnly: true,});
-        res.json("Logged in successfully");
+        {maxAge: 60 * 2, httpOnly: true,});
+        res.cookie("id", user._id);
+        res.cookie("admin", user.admin);
+        // res.json("Logged in successfully");
 
 
         res.redirect('http://localhost:3000/profil/'+user._id); 
@@ -410,9 +416,12 @@ app.post('/api/login', (req, res) => {
 app.get('/profil/:id', validateTokens, (req, res)=> {
     User.findOne({_id: req.params.id})
     .then( (user) => {
-        res.render('UserPage', {user : user})
+        res.json(user);
     })
     .catch(err => {console.log(err)})
+
+    // res.render('UserPage', {user : user})
+    
 }); 
 
 
