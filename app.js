@@ -2,6 +2,11 @@ var express = require("express");
 var app = express();
 const bcrypt = require('bcrypt'); 
 const methodeOverride = require('method-override');
+const {createTokens, validateTokens} = require("./JWT");
+
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
 // const uri = "mongodb+srv://Mayeul_Croguennec:MCroguennec@cluster0.objk9dm.mongodb.net/Formulaire/?retryWrites=true&w=majority";
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 // client.connect(err => {
@@ -11,10 +16,17 @@ const methodeOverride = require('method-override');
 //   client.close();
 // });
 
+var cors = require('cors');
+app.use(cors());
+
+
 const path = require('path');
 app.use(express.static(path.join(__dirname, "public")));
 
 const Form = require("./model/model");
+const Qcm = require("./model/Qcm");
+const Reponse = require("./model/Reponse");
+
 app.use(methodeOverride('_method'));
 var bodyParser = require("body-parser");
 const { default: mongoose } = require("mongoose");
@@ -105,47 +117,84 @@ app.get('/form/edit/:id', (req, res) => {
         .catch(err => console.log(err));
 })
 
-app.put("/qcm/edit/:id", function(req, res){
+app.put("/qcm/edit/:userId/:qcmId/", function(req, res){
     // res.send("PUT request");
+    // console.log(req.body.questionId);
     Qcm.findOne({
-        _id: req.params.id
+        _id: req.params.qcmId,/*  "questions._id ": req.body.questionId, */
     }).then(data => {
-        data.titreQuestionnaire = req.body.titre,
-        data.auteur= req.body.auteur,
-        data.question = req.body.question,
-        data.reponse1 = req.body.rep1,
-        data.reponse2 = req.body.rep2,
-        data.reponse3 = req.body.rep3,
-        data.reponse4 = req.body.rep4,
+        console.log(req.body);
+        // console.log(data.questions.id(req.body.questionId).description);
+        // data.questions.id(req.body.questionId).description =  "q";
+        // console.log(data.questions.id(req.body.questionId).description);
+        // console.log(data.children[0]);
+        if (req.body.titre){
+            data.titreQuestionnaire = req.body.titre;
+        }
+        else{
+            data.questions.id(req.body.questionId).description =  req.body.description;
+            data.questions.id(req.body.questionId).reponse1 =  req.body.rep1;
+            data.questions.id(req.body.questionId).reponse2 =  req.body.rep2;
+            data.questions.id(req.body.questionId).reponse3 =  req.body.rep3;
+            data.questions.id(req.body.questionId).reponse4 =  req.body.rep4;
+        }
+        
+
         
         data.save().then(()=>{
             console.log("Data change !");
-            res.redirect('/');
+            res.redirect("/edit/"+req.params.userId);
         }).catch(err => console.log(err));
     }).catch(err => console.log(err));
 })
 
 
+app.delete("/qcm/delete/:userId/:qcmId/", (req, res)=>{
+
+    console.log( "body     :");
+    console.log(req.body);
+
+    if (req.body.titre){
+        Qcm.remove({_id: req.params.qcmId})
+        .then(()=>{
+            console.log("data deleted !!");
+        res.redirect("/edit/"+req.params.userId);
+        }).catch(err => console.log(err))
+    }
+    else {
 
 
-
-app.delete("/form/delete/:id", (req, res)=>{
-    Form.remove({
-        _id: req.params.id
-    }).then(()=>{
-        console.log("data deleted !!");
-        res.redirect("/");
+        Qcm.findOne({
+        _id: req.params.qcmId
+    }).then(data =>{
+        console.log(data);
+        console.log(data.questions.id(req.body.questionId));
+        data.questions.id(req.body.questionId).remove();
+        data.save().then(()=>{
+            console.log("data deleted !!");
+        res.redirect("/edit/"+req.params.userId);
+        }).catch(err => console.log(err))
+        
     }).catch(err => console.log(err))
+    }
+
+    
 })
 
+//page permettant de choisir les différentes fonctionnalités 
+app.get("/choice/:id", (req,res)=>{
 
-app.get("/choice", (req,res)=>{
-    res.render("Choice");
+    User.findOne({_id: req.params.id})
+    .then((user)=>{
+        res.render("Choice", {user: user});
+    })
+    
 });
 
-const Qcm = require("./model/Qcm");
+
 const { userInfo } = require("os");
 
+//page pour créer un qcm
 app.get("/create/:id", (req,res)=>{
     // res.render("Create");
 
@@ -163,13 +212,14 @@ app.get("/create/:id", (req,res)=>{
     
 });
 
+//page pour modifier les questions 
 app.get("/edit/:id", (req,res)=>{
 
     User.findOne({ _id : req.params.id})
     .then( user => {
         if (user.admin){
             Qcm.find().then(data=>{
-            res.render('Edit', {data:data});
+            res.render('Edit', {data:data, user:user});
             }).catch(err=>console.log(err));
         }
         else{
@@ -182,40 +232,118 @@ app.get("/edit/:id", (req,res)=>{
 
 //enregistrer la question créée
 app.post("/create-qcm/:id", (req,res)=>{
-    const Data = new Qcm({
-        titreQuestionnaire : req.body.titre,
-        auteur: req.body.auteur,
-        question : req.body.question,
-        reponse1 : req.body.rep1,
-        reponse2 : req.body.rep2,
-        reponse3 : req.body.rep3,
-        reponse4 : req.body.rep4,
+
+
+    Qcm.findOne({titreQuestionnaire : req.body.titre})
+    .then(qcm => {
+
+        console.log(qcm);
+        var userId = req.params.id;
+
+
+        if(qcm){
+            qcm.questions.push({
+                description:  req.body.question,
+            reponse1 : req.body.rep1,
+            reponse2 : req.body.rep2, 
+            reponse3 : req.body.rep3, 
+            reponse4 : req.body.rep4
+
+            })
+
+
+            qcm.save().then(()=>{
+                console.log("Data saved !");
+                console.log(qcm);
+                res.redirect("/profil/"+userId); 
+            })
+        }
+        else
+        {
+            const Data = new Qcm({
+                titreQuestionnaire : req.body.titre,
+                auteur: req.params.id,
+                questions : [{description:  req.body.question,
+                    reponse1 : req.body.rep1,
+                    reponse2 : req.body.rep2, 
+                    reponse3 : req.body.rep3, 
+                    reponse4 : req.body.rep4
+                }],
+            })
+            
+            Data.save().then(()=>{
+                    console.log("Data saved !");
+                    console.log(Data);
+                    res.redirect("/profil/"+userId);      
+            });
+        }
     })
-    var userId = req.params.id;
-    Data.save().then(()=>{
-            console.log("Data saved !");
-            res.redirect("/profil/"+userId);      
-        });
+    .catch(err => console.log(err));
+    
 });
 
 //remplir les qcms 
-app.get("/fill", (req,res)=>{
-    // res.render("Create");
+app.get("/fill/:id", (req,res)=>{
+    User.findOne({ _id : req.params.id})
+    .then( user => {
 
-    Qcm.find()
-    .then(data=>{
+        Qcm.find()
+        .then(data=>{
         Qcm.distinct("titreQuestionnaire")
         .then(titres => {
-            res.render('Fill', {data:data, titres:titres});
+            res.render('Fill', {data:data, titres:titres, user:user});
         })
         .catch(err => console.log(err))})
     .catch(err=>console.log(err));
+    })
+    .catch(err=>console.log(err));
+    
 
 });
 
 
-app.post("/submit-qcm", (req,res)=>{
-    res.redirect("/choice");
+app.post("/submit-qcm/:userId/:qcmId", (req,res)=>{
+
+    console.log('Body  :');
+    console.log(req.body)
+    Qcm.findOne({ _id : req.params.qcmId})
+    .then(data => {
+        console.log('Data :   ');
+        console.log(data);
+        // const Data = new Reponse({
+        //     idquestionnaire : data._id,
+        //     titreQuestionnaire : data.titreQuestionnaire,
+        //     auteur : data.auteur,
+        //     utilisateur : req.params.userId,
+        //     questions : [{
+        //         description : data.
+        //     }]
+
+        // })
+
+        // data.questions.forEach(q => {
+
+        // })
+
+        // var reponses = [];
+        // reponses.push({description:  q.description,
+        //             reponse1 : q.reponse1,
+        //             reponse2 : req.body.rep2, 
+        //             reponse3 : req.body.rep3, 
+        //             reponse4 : req.body.rep4
+        //         })
+
+    //     questions : [{description:  req.body.question,
+    //         reponse1 : req.body.rep1,
+    //         reponse2 : req.body.rep2, 
+    //         reponse3 : req.body.rep3, 
+    //         reponse4 : req.body.rep4
+    //     }],
+    // })
+    })
+
+
+    // res.redirect("/fill");
 });
 
 
@@ -236,15 +364,22 @@ app.post('/api/register', (req, res)=>{
     Data.save()
     .then( () => {
         console.log('User saved !');
-        res.render('UserPage', {data : Data});
+        // res.json(Data);
+        // res.redirect('http://localhost:3000/login');
+        // res.render('UserPage', {user : Data});
         // res.redirect('/choice');
+        res.redirect('http://localhost:3000/profil/'+Data._id);
     })
     .catch(err => console.log(err));
 });
 
 //Connexion
 app.get('/login', (req, res) => {  
-    res.render('Login');
+    // res.render('Login');
+    
+    Form.find().then(data=>{
+        res.render('Home', {data:data});
+    }).catch(err=>console.log(err));
 });
 
 
@@ -260,19 +395,33 @@ app.post('/api/login', (req, res) => {
         if ( !bcrypt.compareSync(req.body.password,user.password )){
             return res.status(404).send('Invalid password!');
         }
-        res.render('UserPage', {data : user})
+
+        const accessToken = createTokens(user);
+        console.log("Access token");
+        res.cookie("access-token", accessToken,  
+        {maxAge: 60 * 2, httpOnly: true,});
+        res.cookie("id", user._id);
+        res.cookie("admin", user.admin);
+        // res.json("Logged in successfully");
+
+
+        res.redirect('http://localhost:3000/profil/'+user._id); 
+        // res.render('UserPage', {user : user})
     })
     .catch(err => console.log(err));
 
 });
 
 //page de profil 
-app.get('/profil/:id', (req, res)=> {
+app.get('/profil/:id', validateTokens, (req, res)=> {
     User.findOne({_id: req.params.id})
     .then( (user) => {
-        res.render('UserPage', {data : user})
+        res.json(user);
     })
     .catch(err => {console.log(err)})
+
+    // res.render('UserPage', {user : user})
+    
 }); 
 
 

@@ -21,44 +21,52 @@
     <% titres.forEach(titre => { %>
         <h3 class="spacing1"> <%= titre %>  </h3>
        
-    <form action="/submit-qcm" method="post">
+    
 
 
-        <% data.forEach(element => { %>
+        <% data.forEach((element,index) => { %>
 
             <% if (element.titreQuestionnaire == titre) { %>
+                <form action="/submit-qcm/<%= user._id%>/<%= element._id%>" method="post">
+                <% element.questions.forEach(champ => { %>
 
-                <div class="spacing1">
-                    <%= element.question %>
-                    <br>
-                    <br>
-                    <% if (element.reponse1) { %>
-                        <input type="checkbox" id="rep1" name="rep1" value="cheked">
-                        <label for="rep1" > <%= element.reponse1 %> </label>
+                    <div class="spacing1">
+                        <%= champ.description %>
                         <br>
-                    <% } %>
-                
-        
-                    <% if (element.reponse2) { %>
-                        <input type="checkbox" id="rep2" name="rep2" value="">
-                        <label for="rep2" > <%= element.reponse2 %> </label>
                         <br>
-                     <% } %>
-                
-        
-                    <% if (element.reponse3) { %>
-                        <input type="checkbox" id="rep3" name="rep3" value="">
-                        <label for="rep3"> <%= element.reponse3 %> </label>
-                        <br>
-                    <% } %>
-        
-                    <% if (element.reponse4) { %>
-                        <input type="checkbox" id="rep4" name="rep4" value="">
-                        <label for="rep4"> <%= element.reponse4 %> </label>
-                        <br>
-                        
-                    <% } %>
-                    </div>
+                        <% if (champ.reponse1) { %>
+                            <input type="checkbox" id="rep1" name="rep1<%= index %>"  value="cheked">
+                            <label for="rep1" > <%= champ.reponse1 %> </label>
+                            <br>
+                        <% } %>
+                    
+            
+                        <% if (champ.reponse2) { %>
+                            <input type="checkbox" id="rep2" name="rep2" value="">
+                            <label for="rep2" > <%= champ.reponse2 %> </label>
+                            <br>
+                        <% } %>
+                    
+            
+                        <% if (champ.reponse3) { %>
+                            <input type="checkbox" id="rep3" name="rep3" value="">
+                            <label for="rep3"> <%= champ.reponse3 %> </label>
+                            <br>
+                        <% } %>
+            
+                        <% if (champ.reponse4) { %>
+                            <input type="checkbox" id="rep4" name="rep4" value="">
+                            <label for="rep4"> <%= champ.reponse4 %> </label>
+                            <br>
+                            
+                        <% } %>
+                        </div>
+
+
+                 
+                <% }) %>
+
+
 
 
              

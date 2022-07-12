@@ -1,13 +1,18 @@
 body {
     text-align: center;
+    padding-bottom: 5%;
 }
 
 h1{
-    padding-top: 4%;
+    padding-top: 7%;
     font-size: 35px;
 }
-#titre{
+.descri{
     margin-top: 5%;
+}
+
+h3{
+    margin-top: 3%;
 }
 .line{
     background-color: #000;
@@ -16,10 +21,10 @@ h1{
     margin-left: 50%;
     transform: translateX(-50%);
     margin-top: 4%;
-    
 }
-.spacing{
-    margin-top: 1%;
+
+.spacing1{
+    padding-top: 2%;
 }
 .confirmed{
     text-decoration: none;
