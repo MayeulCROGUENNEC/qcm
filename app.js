@@ -219,7 +219,8 @@ app.get("/edit/:id", (req,res)=>{
     .then( user => {
         if (user.admin){
             Qcm.find().then(data=>{
-            res.render('Edit', {data:data, user:user});
+            // res.render('Edit', {data:data, user:user});
+            res.json( {data:data, user:user});
             }).catch(err=>console.log(err));
         }
         else{
@@ -399,7 +400,7 @@ app.post('/api/login', (req, res) => {
         const accessToken = createTokens(user);
         console.log("Access token");
         res.cookie("access-token", accessToken,  
-        {maxAge: 60 * 2, httpOnly: true,});
+        {maxAge: 120 * 60 * 24, httpOnly: true});
         res.cookie("id", user._id);
         res.cookie("admin", user.admin);
         // res.json("Logged in successfully");
@@ -413,7 +414,7 @@ app.post('/api/login', (req, res) => {
 });
 
 //page de profil 
-app.get('/profil/:id', validateTokens, (req, res)=> {
+app.get('/profil/:id', (req, res)=> {
     User.findOne({_id: req.params.id})
     .then( (user) => {
         res.json(user);
