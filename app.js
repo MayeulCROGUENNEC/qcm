@@ -24,8 +24,6 @@ const path = require('path');
 app.use(express.static(path.join(__dirname, "public")));
 
 const Form = require("./model/model");
-const Qcm = require("./model/Qcm");
-const Reponse = require("./model/Reponse");
 
 app.use(methodeOverride('_method'));
 var bodyParser = require("body-parser");
@@ -45,6 +43,8 @@ mongoose.connect(url, connectionParams).then(()=>{
     console.log("Mongodb database connected !");
 }).catch(err => console.log(err));
 
+const Qcm = require("./model/Qcm");
+const Reponse = require("./model/Reponse");
 
 app.get("/", function (req, res){
     // res.send("<html><body><h1>Hello World</h1></body></html>");
@@ -85,6 +85,8 @@ app.post("/submit-data-form", function(req, res){
         pseudo: req.body.pseudo,
         password: req.body. password,
     })
+
+    Reponse.find()
 
 Data.save().then(()=>{
         console.log("Data saved !");
@@ -148,12 +150,13 @@ app.put("/qcm/edit/:userId/:qcmId/", function(req, res){
     }).catch(err => console.log(err));
 })
 
+// console.log( "body     :");
+// console.log(req.body);
 
 app.delete("/qcm/delete/:userId/:qcmId/", (req, res)=>{
 
-    console.log( "body     :");
-    console.log(req.body);
 
+    //Si l'utilisateur veut supprimer le questionnaire en entier
     if (req.body.titre){
         Qcm.remove({_id: req.params.qcmId})
         .then(()=>{
@@ -161,9 +164,9 @@ app.delete("/qcm/delete/:userId/:qcmId/", (req, res)=>{
         res.redirect("/edit/"+req.params.userId);
         }).catch(err => console.log(err))
     }
+
+    //Si l'utilisateur veut supprimer seuleument une question du questionnaire
     else {
-
-
         Qcm.findOne({
         _id: req.params.qcmId
     }).then(data =>{
@@ -177,8 +180,6 @@ app.delete("/qcm/delete/:userId/:qcmId/", (req, res)=>{
         
     }).catch(err => console.log(err))
     }
-
-    
 })
 
 //page permettant de choisir les différentes fonctionnalités 
@@ -194,9 +195,9 @@ app.get("/choice/:id", (req,res)=>{
 
 const { userInfo } = require("os");
 
+// res.render("Create");
 //page pour créer un qcm
 app.get("/create/:id", (req,res)=>{
-    // res.render("Create");
 
     User.findOne({ _id : req.params.id})
     .then( user => {
@@ -208,10 +209,9 @@ app.get("/create/:id", (req,res)=>{
         }
     })
     .catch(err=>console.log(err));
-
-    
 });
 
+// res.json( {data:data, user:user});
 //page pour modifier les questions 
 app.get("/edit/:id", (req,res)=>{
 
@@ -219,8 +219,7 @@ app.get("/edit/:id", (req,res)=>{
     .then( user => {
         if (user.admin){
             Qcm.find().then(data=>{
-            // res.render('Edit', {data:data, user:user});
-            res.json( {data:data, user:user});
+            res.render('Edit', {data:data, user:user});
             }).catch(err=>console.log(err));
         }
         else{
@@ -241,8 +240,9 @@ app.post("/create-qcm/:id", (req,res)=>{
         console.log(qcm);
         var userId = req.params.id;
 
-
+        //Si le questionnaire existe déjà, mise à jour du questionnaire
         if(qcm){
+            //ajout de la question dans la liste de questions
             qcm.questions.push({
                 description:  req.body.question,
             reponse1 : req.body.rep1,
@@ -259,7 +259,7 @@ app.post("/create-qcm/:id", (req,res)=>{
                 res.redirect("/profil/"+userId); 
             })
         }
-        else
+        else //Si le questionnaire n'existe pas, création d'un nouveau questionnaire
         {
             const Data = new Qcm({
                 titreQuestionnaire : req.body.titre,
