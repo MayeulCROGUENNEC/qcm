@@ -292,7 +292,12 @@ app.get("/fill/:id", (req,res)=>{
         .then(data=>{
         Qcm.distinct("titreQuestionnaire")
         .then(titres => {
-            res.render('Fill', {data:data, titres:titres, user:user});
+            // res.render('Fill', {data:data, titres:titres, user:user});
+            // res.render('Fill', {data:data, titres:titres, user:user});
+            // res.redirect('http://localhost:3000/fill/'+req.params.id);
+            console.log({data:data, titres:titres, user:user});
+            res.json({data:data, titres:titres, user:user});
+
         })
         .catch(err => console.log(err))})
     .catch(err=>console.log(err));
