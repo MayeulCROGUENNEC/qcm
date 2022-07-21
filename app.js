@@ -44,8 +44,9 @@ mongoose.connect(url, connectionParams).then(()=>{
 }).catch(err => console.log(err));
 
 const Qcm = require("./model/Qcm");
-const Reponse = require("./model/Reponse");
+const User = require('./model/User');
 
+const Reponse = require("./model/Reponse");
 app.get("/", function (req, res){
     // res.send("<html><body><h1>Hello World</h1></body></html>");
     // res.sendFile("/Users/frede/Documents/formation dev web/cours/NodeJS-express/dev1/index.html");
@@ -119,17 +120,17 @@ app.get('/form/edit/:id', (req, res) => {
         .catch(err => console.log(err));
 })
 
+// console.log(req.body);
+// console.log(data.questions.id(req.body.questionId).description);
+// data.questions.id(req.body.questionId).description =  "q";
+// console.log(data.questions.id(req.body.questionId).description);
+// console.log(data.children[0]);
+// res.send("PUT request");
+// console.log(req.body.questionId);
 app.put("/qcm/edit/:userId/:qcmId/", function(req, res){
-    // res.send("PUT request");
-    // console.log(req.body.questionId);
     Qcm.findOne({
         _id: req.params.qcmId,/*  "questions._id ": req.body.questionId, */
     }).then(data => {
-        console.log(req.body);
-        // console.log(data.questions.id(req.body.questionId).description);
-        // data.questions.id(req.body.questionId).description =  "q";
-        // console.log(data.questions.id(req.body.questionId).description);
-        // console.log(data.children[0]);
         if (req.body.titre){
             data.titreQuestionnaire = req.body.titre;
         }
@@ -141,8 +142,6 @@ app.put("/qcm/edit/:userId/:qcmId/", function(req, res){
             data.questions.id(req.body.questionId).reponse4 =  req.body.rep4;
         }
         
-
-        
         data.save().then(()=>{
             console.log("Data change !");
             res.redirect("/edit/"+req.params.userId);
@@ -150,11 +149,11 @@ app.put("/qcm/edit/:userId/:qcmId/", function(req, res){
     }).catch(err => console.log(err));
 })
 
+
+
 // console.log( "body     :");
 // console.log(req.body);
-
 app.delete("/qcm/delete/:userId/:qcmId/", (req, res)=>{
-
 
     //Si l'utilisateur veut supprimer le questionnaire en entier
     if (req.body.titre){
@@ -180,7 +179,7 @@ app.delete("/qcm/delete/:userId/:qcmId/", (req, res)=>{
         
     }).catch(err => console.log(err))
     }
-})
+});
 
 //page permettant de choisir les différentes fonctionnalités 
 app.get("/choice/:id", (req,res)=>{
@@ -195,9 +194,9 @@ app.get("/choice/:id", (req,res)=>{
 
 const { userInfo } = require("os");
 
-// res.render("Create");
 //page pour créer un qcm
 app.get("/create/:id", (req,res)=>{
+    // res.render("Create");
 
     User.findOne({ _id : req.params.id})
     .then( user => {
@@ -211,14 +210,14 @@ app.get("/create/:id", (req,res)=>{
     .catch(err=>console.log(err));
 });
 
-// res.json( {data:data, user:user});
 //page pour modifier les questions 
 app.get("/edit/:id", (req,res)=>{
-
+    
     User.findOne({ _id : req.params.id})
     .then( user => {
         if (user.admin){
             Qcm.find().then(data=>{
+                // res.json( {data:data, user:user});
             res.render('Edit', {data:data, user:user});
             }).catch(err=>console.log(err));
         }
@@ -249,9 +248,7 @@ app.post("/create-qcm/:id", (req,res)=>{
             reponse2 : req.body.rep2, 
             reponse3 : req.body.rep3, 
             reponse4 : req.body.rep4
-
             })
-
 
             qcm.save().then(()=>{
                 console.log("Data saved !");
@@ -349,7 +346,7 @@ app.post("/submit-qcm/:userId/:qcmId", (req,res)=>{
 
 
 //Inscription 
-const User = require('./model/User');
+
 
 app.get('/signin', (req, res) => {
     res.render('Register');
@@ -376,13 +373,12 @@ app.post('/api/register', (req, res)=>{
 
 //Connexion
 app.get('/login', (req, res) => {  
-    // res.render('Login');
-    
-    Form.find().then(data=>{
-        res.render('Home', {data:data});
-    }).catch(err=>console.log(err));
+    res.render('Login');
 });
 
+// Form.find().then(data=>{
+//     res.render('Home', {data:data});
+// }).catch(err=>console.log(err));
 
 app.post('/api/login', (req, res) => {
 
@@ -403,15 +399,15 @@ app.post('/api/login', (req, res) => {
         {maxAge: 120 * 60 * 24, httpOnly: true});
         res.cookie("id", user._id);
         res.cookie("admin", user.admin);
-        // res.json("Logged in successfully");
-
-
-        res.redirect('http://localhost:3000/profil/'+user._id); 
-        // res.render('UserPage', {user : user})
+        //afficher la page de profil
+        res.render('UserPage', {user : user})
     })
     .catch(err => console.log(err));
-
+    
 });
+
+// res.json("Logged in successfully");
+// res.redirect('http://localhost:3000/profil/'+user._id); 
 
 //page de profil 
 app.get('/profil/:id', (req, res)=> {
